@@ -5,8 +5,13 @@ Input: Quốc gia, thảm họa, mức độ nghiêm trọng, thiệt hại kinh
 Output: Số người bị chết do thảm họa
 """
 
+import os
 import pandas as pd
 import numpy as np
+
+# Lấy đường dẫn thư mục chứa file Python này
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_CSV = os.path.join(SCRIPT_DIR, "global_disaster_response_2018_2024.csv")
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split
@@ -38,10 +43,10 @@ class DisasterCasualtyPredictor:
         
     def load_data(self):
         """Load và xử lý dữ liệu từ CSV"""
-        print("📊 Đang tải dữ liệu...")
+        print("Đang tải dữ liệu...")
         self.df = pd.read_csv(self.csv_path)
         
-        print(f"✅ Tải thành công {len(self.df)} bản ghi")
+        print(f" Tải thành công {len(self.df)} bản ghi")
         print(f"Các cột: {list(self.df.columns)}")
         print(f"\nThống kê dữ liệu Casualties:")
         print(f"  Min: {self.df['casualties'].min():.0f}")
@@ -125,7 +130,7 @@ class DisasterCasualtyPredictor:
         X_test_scaled = self.scaler.transform(X_test)
         
         # Huấn luyện mô hình Gradient Boosting
-        print("🚀 Đang huấn luyện mô hình Gradient Boosting...")
+        print("Đang huấn luyện mô hình Gradient Boosting...")
         self.model = GradientBoostingRegressor(
             n_estimators=200,
             learning_rate=0.1,
@@ -149,7 +154,7 @@ class DisasterCasualtyPredictor:
         train_mae = mean_absolute_error(y_train, y_pred_train)
         test_mae = mean_absolute_error(y_test, y_pred_test)
         
-        print(f"\n📈 Kết quả đánh giá:")
+        print(f"\nKết quả đánh giá:")
         print(f"  Train R² Score: {train_r2:.4f}")
         print(f"  Test R² Score: {test_r2:.4f}")
         print(f"  Train RMSE: {train_rmse:.2f}")
@@ -158,7 +163,7 @@ class DisasterCasualtyPredictor:
         print(f"  Test MAE: {test_mae:.2f}")
         
         # Feature importance
-        print(f"\n⭐ Tầm quan trọng của features:")
+        print(f"\nTầm quan trọng của features:")
         feature_importance = pd.DataFrame({
             'feature': self.feature_columns,
             'importance': self.model.feature_importances_
@@ -229,7 +234,7 @@ class DisasterCasualtyPredictor:
                     input_data[col].astype(str)
                 )
             except ValueError:
-                print(f"⚠️  {col} '{input_data[col].values[0]}' không trong dữ liệu huấn luyện")
+                print(f"  {col} '{input_data[col].values[0]}' không trong dữ liệu huấn luyện")
                 input_data[col] = 0
         
         # Chuẩn hóa
@@ -248,7 +253,7 @@ class DisasterCasualtyPredictor:
             'label_encoders': self.label_encoders,
             'feature_columns': self.feature_columns
         }, filepath)
-        print(f"✅ Mô hình đã lưu tại {filepath}")
+        print(f"Mô hình đã lưu tại {filepath}")
     
     def load_model(self, filepath: str):
         """Load mô hình từ file"""
@@ -257,13 +262,15 @@ class DisasterCasualtyPredictor:
         self.scaler = data['scaler']
         self.label_encoders = data['label_encoders']
         self.feature_columns = data['feature_columns']
-        print(f"✅ Mô hình đã load từ {filepath}")
+        print(f"Mô hình đã load từ {filepath}")
 
 
-def interactive_prediction(csv_path="du_lieu_sach.csv"):
+def interactive_prediction(csv_path=None):
     """Dự đoán tương tác từ input của người dùng"""
+    if csv_path is None:
+        csv_path = DEFAULT_CSV
     print("\n" + "="*70)
-    print("🔮 CHẾ ĐỘ DỰ ĐOÁN TƯƠNG TÁC")
+    print("CHẾ ĐỘ DỰ ĐOÁN TƯƠNG TÁC")
     print("="*70)
     
     predictor = DisasterCasualtyPredictor(csv_path)
@@ -274,11 +281,11 @@ def interactive_prediction(csv_path="du_lieu_sach.csv"):
     countries = sorted(predictor.df['country'].unique())
     disaster_types = sorted(predictor.df['disaster_type'].unique())
     
-    print(f"\n📍 Các quốc gia trong dữ liệu:")
+    print(f"\nCác quốc gia trong dữ liệu:")
     for i, country in enumerate(countries, 1):
         print(f"   {i}. {country}")
     
-    print(f"\n⚠️  Các loại thảm họa:")
+    print(f"\nCác loại thảm họa:")
     for i, dtype in enumerate(disaster_types, 1):
         print(f"   {i}. {dtype}")
     
@@ -310,27 +317,29 @@ def interactive_prediction(csv_path="du_lieu_sach.csv"):
             )
             
             print("\n" + "="*70)
-            print(f"📊 KẾT QUẢ DỰ ĐOÁN")
+            print(f"KẾT QUẢ DỰ ĐOÁN")
             print("="*70)
-            print(f"  🌍 Quốc gia: {country}")
-            print(f"  ⚠️  Thảm họa: {disaster_type}")
-            print(f"  📊 Mức độ: {severity_index}/10")
-            print(f"  💰 Thiệt hại kinh tế: ${economic_loss:,.0f}")
-            print(f"  ⏱️  Thời gian phản ứng: {response_time} giờ")
-            print(f"  ⭐ Hiệu quả: {efficiency}/100")
-            print(f"  📍 Vị trí: ({latitude}, {longitude})")
+            print(f"  Quốc gia: {country}")
+            print(f"  Thảm họa: {disaster_type}")
+            print(f"  Mức độ: {severity_index}/10")
+            print(f"  Thiệt hại kinh tế: ${economic_loss:,.0f}")
+            print(f"  Thời gian phản ứng: {response_time} giờ")
+            print(f"  Hiệu quả: {efficiency}/100")
+            print(f"  Vị trí: ({latitude}, {longitude})")
             print("-"*70)
-            print(f"👥 DỰ ĐOÁN SỐ NGƯỜI BỊ CHẾT: {prediction:.0f} người")
+            print(f"DỰ ĐOÁN SỐ NGƯỜI BỊ CHẾT: {prediction:.0f} người")
             print("="*70)
             
         except ValueError:
-            print(f"❌ Lỗi: Vui lòng nhập dữ liệu hợp lệ!")
+            print(f"Lỗi: Vui lòng nhập dữ liệu hợp lệ!")
         except Exception as e:
-            print(f"❌ Lỗi: {str(e)}")
+            print(f"Lỗi: {str(e)}")
 
 
-def test_predictions(csv_path="du_lieu_sach.csv"):
+def test_predictions(csv_path=None):
     """Test dự đoán với một số trường hợp"""
+    if csv_path is None:
+        csv_path = DEFAULT_CSV
     
     predictor = DisasterCasualtyPredictor(csv_path)
     
@@ -345,7 +354,7 @@ def test_predictions(csv_path="du_lieu_sach.csv"):
     
     # Test dự đoán với một số trường hợp
     print("\n" + "="*70)
-    print("🔮 TEST DỰ ĐOÁN VỚI CÁC TRƯỜNG HỢP MẪU")
+    print("TEST DỰ ĐOÁN VỚI CÁC TRƯỜNG HỢP MẪU")
     print("="*70)
     
     test_cases = [
@@ -410,22 +419,22 @@ def test_predictions(csv_path="du_lieu_sach.csv"):
         desc = case.pop('description')
         prediction = predictor.predict(**case)
         
-        print(f"\n📍 Trường hợp {i}: {desc}")
-        print(f"   🌍 Quốc gia: {case['country']}")
-        print(f"   ⚠️  Thảm họa: {case['disaster_type']}")
-        print(f"   📊 Mức độ: {case['severity_index']}/10")
-        print(f"   💰 Thiệt hại: ${case['economic_loss_usd']:,.0f}")
-        print(f"   ⏱️  Thời gian phản ứng: {case['response_time_hours']} giờ")
-        print(f"   ⭐ Hiệu quả: {case['response_efficiency_score']}/100")
-        print(f"   📍 Vị trí: ({case['latitude']}, {case['longitude']})")
-        print(f"   👥 DỰ ĐOÁN SỐ NGƯỜI BỊ CHẾT: {prediction:.0f} người")
+        print(f"\nTrường hợp {i}: {desc}")
+        print(f"  Quốc gia: {case['country']}")
+        print(f"  Thảm họa: {case['disaster_type']}")
+        print(f"  Mức độ: {case['severity_index']}/10")
+        print(f"  Thiệt hại: ${case['economic_loss_usd']:,.0f}")
+        print(f"  Thời gian phản ứng: {case['response_time_hours']} giờ")
+        print(f"  Hiệu quả: {case['response_efficiency_score']}/100")
+        print(f"  Vị trí: ({case['latitude']}, {case['longitude']})")
+        print(f"  DỰ ĐOÁN SỐ NGƯỜI BỊ CHẾT: {prediction:.0f} người")
 
 
 def main():
     """Main function"""
     
     print("\n" + "="*70)
-    print("🌍 HỆ THỐNG DỰ ĐOÁN THIỆT HẠI NGƯỜI DO THẢM HỌA")
+    print("HỆ THỐNG DỰ ĐOÁN THIỆT HẠI NGƯỜI DO THẢM HỌA")
     print("="*70)
     print("\nChọn chế độ:")
     print("1. Test với các trường hợp mẫu")
@@ -439,8 +448,9 @@ def main():
     elif choice == '2':
         interactive_prediction()
     else:
-        print("👋 Tạm biệt!")
+        print("Tạm biệt!")
 
 
 if __name__ == "__main__":
-    main()
+    # Chạy test trực tiếp để kiểm tra
+    test_predictions()
