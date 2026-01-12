@@ -9,7 +9,3 @@ Regresion
 Classiffication
 
 - 3.Dự đoán mức độ thảm họa (nhỏ - lớn – siêu thảm họa) (Tuấn Anh)
-
-Clutering
-
-- 4.Phân cụm các quốc gia có rủi ro thảm họa cao-trung-thấp (........)
