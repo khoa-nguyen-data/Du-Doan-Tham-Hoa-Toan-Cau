@@ -2,9 +2,7 @@ Dataset thảm họa toàn cầu 2018 - 2024
 
 Regresion
 
-- 1.Dự đoán thời gian phục hồi sau thảm họa (Khoa)
-
-- 2.Dự đoán thiệt hại về người do thảm họa gây ra(Hiếu)
+- 1.Dự đoán thời gian phục hồi sau thảm họa (Khoa, Hiếu)
 
 Classiffication
 
